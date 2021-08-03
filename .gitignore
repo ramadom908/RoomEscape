@@ -1,0 +1,17 @@
+###Unreal ignored files
+#######################
+*/Binaries/
+*/Intermediate/
+*/Saved/
+*/Build
+*/DerivedDataCache
+
+###Visual Studio ignored files
+#######################
+*.VC.db
+*.VC.
+*.opendb
+
+
+Room1/Content/StarterContent/
+room1/.vs/room1/v15/
