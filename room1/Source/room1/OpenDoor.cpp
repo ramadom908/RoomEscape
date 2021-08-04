@@ -22,15 +22,12 @@ void UOpenDoor::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	AActor * Owner = GetOwner();
-	FRotator NewRotation = FRotator(0.0f, -75.0f, 0.0f);
-
-	//ETeleportType tel = ETeleportType::None;
-
-	//Owner->SetActorRotation(NewRotation, ETeleportType::None);
-	Owner->SetActorRotation(NewRotation);
+	ActorThatOpens= GetWorld()->GetFirstPlayerController()->GetPawn();
+	
 	
 }
+
+
 
 
 // Called every frame
@@ -39,5 +36,49 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+	//Pool the trigger Volume
+
+	//PressurePlate->GetFName();
+
+	//ActorThatOpens->GetName();
+
+	if (ActorThatOpens) {
+
+		if (PressurePlate) {
+			if (PressurePlate->IsOverlappingActor(ActorThatOpens)) {
+				OpenDoor();
+			}
+		}
+		if (PressurePlate2) {
+			if (PressurePlate2->IsOverlappingActor(ActorThatOpens)) {
+				OpenDoor();
+			}
+		}
+
+
+	}
+
+	
+
+	
 }
 
+
+
+void UOpenDoor::OpenDoor()
+{
+	AActor * Owner = GetOwner();
+	FRotator NewRotation = FRotator(0.0f, -75.0f, 0.0f);
+	FRotator NewRotation3 = FRotator(0.0f, 0.0f, 0.0f);
+
+	//ETeleportType tel = ETeleportType::None;
+
+	//Owner->SetActorRotation(NewRotation, ETeleportType::None);
+	Owner->SetActorRotation(NewRotation);
+
+	if (Owner->GetName() == "SM_Door3") {
+		Owner->SetActorRotation(NewRotation3);
+	}
+
+
+}
