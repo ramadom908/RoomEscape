@@ -35,14 +35,14 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	//Get player viewpoint 
 	UE_LOG(LogTemp, Warning, TEXT("Grabber reporting for duty9988!!!!!!"));
 
-	FVector VectLocation;
-	FRotator VectRotation;
+	FVector PlayerViewPointLocation;
+	FRotator PlayerViewPointRotation;
 
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(VectLocation, VectRotation);
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(PlayerViewPointLocation, PlayerViewPointRotation);
 
 	//UE_LOG(LogTemp, Warning, TEXT("The %s position is %s"), *ObjectName, *ObjectPosition);
 
-	UE_LOG(LogTemp, Warning, TEXT("Position is:  %s,  Rotation is: %s"), *VectLocation.ToString(), *VectRotation.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("Position is:  %s,  Rotation is: %s"), *PlayerViewPointLocation.ToString(), *PlayerViewPointRotation.ToString());
 
 	//Draw a red trace in the world to visualise
 	//FVector LineTraceEnd = VectLocation + FVector(0.f, 0.f, 60.f);
@@ -50,9 +50,9 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	FColor color = { 255, 0, 0, 0 }; // red
 
 
-	FVector LineTraceEnd = VectLocation + VectRotation.Vector() * Reach;
+	FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
 
-	DrawDebugLine(GetWorld(), VectLocation, LineTraceEnd, color,false, -1.0f, 0, 5.f);
+	DrawDebugLine(GetWorld(), PlayerViewPointLocation, LineTraceEnd, color,false, -1.0f, 0, 5.f);
 
 
 	//<<<<<<<<<<<<<<<<<De aici este codul ca sa desenez linii facute din mai multe puncte>>>>>>>>>>>>>>
@@ -103,7 +103,41 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	//<<<<<<<<<<<<<<<<<<<<< END drawing lines >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
-	//Ray -cast out to reach distance 
+	//Ray -cast (line trace)  out to reach distance 
+	
+
+	//FCollisionObjectQueryParams ()
+
+	//set up query parameters
+	FHitResult Hit;
+
+	GetWorld()->LineTraceSingleByObjectType(
+		Hit,
+		PlayerViewPointLocation,
+		LineTraceEnd,
+		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
+		FCollisionQueryParams(FName(TEXT("")), false, GetOwner())
+	);
+
+	//AActor* actor = Hit.GetActor(); // ->GetName();
+
+	if (Hit.GetActor()) {
+		FString actorName = Hit.GetActor()->GetName();
+		UE_LOG(LogTemp, Warning, TEXT("I am hitting : %s"), *actorName);
+	}
+
+	/*AActor * actor = Hit.GetActor();
+
+	if (actor) {
+
+		UE_LOG(LogTemp, Warning, TEXT("I am hitting : %s"), *actor->GetName());
+	}*/
+
+
+	
+
+	
+	
 
 	// see what we hit
 
