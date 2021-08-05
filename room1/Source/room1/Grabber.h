@@ -29,5 +29,7 @@ public:
 private:
 	//How far can we reach in cm
 	float Reach = 140.f;
+
+	UPhysicsHandleComponent * PhysicsHandle = nullptr;
 		
 };
