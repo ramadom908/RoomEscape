@@ -23,7 +23,8 @@ void UOpenDoor::BeginPlay()
 
 	// ...
 	Owner = GetOwner(); // private var for this instance to be used in this file
-	ActorThatOpens= GetWorld()->GetFirstPlayerController()->GetPawn();
+	//ActorThatOpens= GetWorld()->GetFirstPlayerController()->GetPawn();
+
 	StartRotation = Owner->K2_GetActorRotation(); // to be used for door close
 }
 
@@ -36,20 +37,22 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
-	if (ActorThatOpens) {
+	//GetTotalMassOfActorsOnPlate();
+
+	if (GetTotalMassOfActorsOnPlate() > 50.f) { //TODO make into parameter
 
 		if (PressurePlate) {
-			if (PressurePlate->IsOverlappingActor(ActorThatOpens)) {
+			//if (PressurePlate->IsOverlappingActor(ActorThatOpens)) {
 				OpenDoor();
 				LastDoorOpenTime = GetWorld()->GetTimeSeconds();
-			}
+			//}
 		}
-		if (PressurePlate2) {
+		/*if (PressurePlate2) {
 			if (PressurePlate2->IsOverlappingActor(ActorThatOpens)) {
 				OpenDoor();
 				LastDoorOpenTime = GetWorld()->GetTimeSeconds();
 			}
-		}
+		}*/
 	}
 
 	// check if is time to close door 
@@ -59,6 +62,35 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 
 }
 
+
+float UOpenDoor::GetTotalMassOfActorsOnPlate() {
+
+	float TotalMass = 0.f;
+
+	TArray<AActor*> OverlappingActors;
+	PressurePlate->GetOverlappingActors(OverlappingActors);
+
+	/*for (const auto& actor : OverlappingActors) {
+
+		TotalMass = TotalMass + actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+
+		UE_LOG(LogTemp, Warning, TEXT("The actor standing on plate is %s"), *actor->GetName());
+	}*/
+
+	for (auto it = OverlappingActors.CreateConstIterator(); it; ++it) {
+
+
+		TotalMass = TotalMass + (*it)->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+	}
+
+
+	//Find all overlapping actors
+
+	//iterate throug them and add their mass
+
+
+	return TotalMass;
+}
 
 
 void UOpenDoor::OpenDoor()

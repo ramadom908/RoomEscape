@@ -33,6 +33,8 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	
+
 private:
 	UPROPERTY(EditAnywhere)
 	float OpenAngle = 90.0f;
@@ -43,8 +45,8 @@ private:
 	UPROPERTY(EditAnywhere)
 	ATriggerVolume * PressurePlate2; //= nullptr;
 
-	UPROPERTY(EditAnywhere)
-	AActor* ActorThatOpens=nullptr;
+	/*UPROPERTY(EditAnywhere)
+	AActor* ActorThatOpens=nullptr;*/
 	
 	UPROPERTY(EditAnywhere)
 	float DoorCloseDelay = 1.0f;
@@ -54,5 +56,7 @@ private:
 	AActor* Owner; 
 
 	FRotator StartRotation;
+
+	float GetTotalMassOfActorsOnPlate();
 		
 };
