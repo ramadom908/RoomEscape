@@ -105,14 +105,15 @@ void UOpenDoor::OpenDoor()
 
 	//Owner->SetActorRotation(NewRotation, ETeleportType::None);
 	
+	OnOpenRequest97.Broadcast();
 
-	if (Owner) {
+	/*if (Owner) {
 		Owner->SetActorRotation(NewRotation);
 
 		if (Owner->GetName() == "SM_Door3") {
 			Owner->SetActorRotation(NewRotation3);
 		}
-	}
+	}*/
 }
 
 void UOpenDoor::CloseDoor()
