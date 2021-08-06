@@ -10,7 +10,7 @@
 #include "Components/ActorComponent.h"
 #include "OpenDoor.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnOpenRequest);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDoorEvent);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ROOM1_API UOpenDoor : public UActorComponent
@@ -25,21 +25,26 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	void OpenDoor();
-
-	void CloseDoor();
-
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	void OpenAndCloseDoorByPressurePlate();
+
 	UPROPERTY(BlueprintAssignable)
-	FOnOpenRequest OnOpenRequest97;
+	FOnDoorEvent OnOpenRequest97;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnDoorEvent OnCloseRequest97;
 
 
 private:
+	/*UPROPERTY(EditAnywhere)
+	float OpenAngle = 90.0f;*/
+
 	UPROPERTY(EditAnywhere)
-	float OpenAngle = 90.0f;
+	float TriggerMass = 50.f;
+
 
 	UPROPERTY(EditAnywhere)
 	ATriggerVolume * PressurePlate=nullptr;
@@ -50,8 +55,8 @@ private:
 	/*UPROPERTY(EditAnywhere)
 	AActor* ActorThatOpens=nullptr;*/
 	
-	UPROPERTY(EditAnywhere)
-	float DoorCloseDelay = 1.0f;
+	/*UPROPERTY(EditAnywhere)
+	float DoorCloseDelay = 1.0f;*/
 
 	float LastDoorOpenTime;
 
@@ -59,6 +64,6 @@ private:
 
 	FRotator StartRotation;
 
-	float GetTotalMassOfActorsOnPlate();
+	float GetTotalMassOfActorsOnPlate(ATriggerVolume * PressurePlatePar);
 		
 };

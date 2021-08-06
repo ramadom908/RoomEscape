@@ -26,6 +26,16 @@ void UOpenDoor::BeginPlay()
 	//ActorThatOpens= GetWorld()->GetFirstPlayerController()->GetPawn();
 
 	StartRotation = Owner->K2_GetActorRotation(); // to be used for door close
+
+
+	if (PressurePlate) {
+		UE_LOG(LogTemp, Warning, TEXT("The actor standing on plate1 is %s"), *PressurePlate->GetName());
+	}
+	
+	if (PressurePlate2) {
+		UE_LOG(LogTemp, Warning, TEXT("The actor standing on plate2 is %s"), *PressurePlate2->GetName());
+	}
+
 }
 
 
@@ -37,40 +47,42 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
-	//GetTotalMassOfActorsOnPlate();
 
-	if (GetTotalMassOfActorsOnPlate() > 50.f) { //TODO make into parameter
-
-		if (PressurePlate) {
-			//if (PressurePlate->IsOverlappingActor(ActorThatOpens)) {
-				OpenDoor();
-				LastDoorOpenTime = GetWorld()->GetTimeSeconds();
-			//}
-		}
-		/*if (PressurePlate2) {
-			if (PressurePlate2->IsOverlappingActor(ActorThatOpens)) {
-				OpenDoor();
-				LastDoorOpenTime = GetWorld()->GetTimeSeconds();
-			}
-		}*/
-	}
-
-	// check if is time to close door 
-	if (LastDoorOpenTime + DoorCloseDelay < GetWorld()->GetTimeSeconds()) {
-		CloseDoor();
-	}
+	OpenAndCloseDoorByPressurePlate();
 
 }
 
+void UOpenDoor::OpenAndCloseDoorByPressurePlate()
+{
+	float totalMass = 0.0f;
+	float totalMass2 = 0.0f;
 
-float UOpenDoor::GetTotalMassOfActorsOnPlate() {
+	if (PressurePlate) {
+
+		totalMass = GetTotalMassOfActorsOnPlate(PressurePlate);
+	}
+
+	if (PressurePlate2) {
+		totalMass2 = GetTotalMassOfActorsOnPlate(PressurePlate2);
+	}
+
+	if (totalMass > TriggerMass || totalMass2 > TriggerMass) {
+		OnOpenRequest97.Broadcast();
+	}
+	else {
+		OnCloseRequest97.Broadcast();
+	}
+}
+
+
+float UOpenDoor::GetTotalMassOfActorsOnPlate(ATriggerVolume * PressurePlatePar) {
 
 	float TotalMass = 0.f;
 
 	TArray<AActor*> OverlappingActors;
 
-	if (!PressurePlate) { return TotalMass;  }
-	PressurePlate->GetOverlappingActors(OverlappingActors);
+	if (!PressurePlatePar) { return TotalMass;  }
+	PressurePlatePar->GetOverlappingActors(OverlappingActors);
 
 	/*for (const auto& actor : OverlappingActors) {
 
@@ -95,42 +107,42 @@ float UOpenDoor::GetTotalMassOfActorsOnPlate() {
 }
 
 
-void UOpenDoor::OpenDoor()
-{
-	
-	FRotator NewRotation = FRotator(0.0f, OpenAngle, 0.0f);
-	FRotator NewRotation3 = FRotator(0.0f, OpenAngle, 0.0f);
+//void UOpenDoor::OpenDoor()
+//{
+//	
+//	//FRotator NewRotation = FRotator(0.0f, OpenAngle, 0.0f);
+//	//FRotator NewRotation3 = FRotator(0.0f, OpenAngle, 0.0f);
+//
+//	//ETeleportType tel = ETeleportType::None;
+//
+//	//Owner->SetActorRotation(NewRotation, ETeleportType::None);
+//	
+//	OnOpenRequest97.Broadcast();
+//
+//	/*if (Owner) {
+//		Owner->SetActorRotation(NewRotation);
+//
+//		if (Owner->GetName() == "SM_Door3") {
+//			Owner->SetActorRotation(NewRotation3);
+//		}
+//	}*/
+//}
 
-	//ETeleportType tel = ETeleportType::None;
-
-	//Owner->SetActorRotation(NewRotation, ETeleportType::None);
-	
-	OnOpenRequest97.Broadcast();
-
-	/*if (Owner) {
-		Owner->SetActorRotation(NewRotation);
-
-		if (Owner->GetName() == "SM_Door3") {
-			Owner->SetActorRotation(NewRotation3);
-		}
-	}*/
-}
-
-void UOpenDoor::CloseDoor()
-{
-	
-	FRotator NewRotation = FRotator(0.0f, 0.0f, 0.0f);
-	FRotator NewRotation3 = FRotator(0.0f, -94.0f, 0.0f);
-
-	FRotator NewRotation4 = StartRotation;
-	//ETeleportType tel = ETeleportType::None;
-
-	//Owner->SetActorRotation(NewRotation, ETeleportType::None);
-	Owner->SetActorRotation(StartRotation);
-
-
-	if (Owner->GetName() == "SM_Door3") {
-		Owner->SetActorRotation(StartRotation);
-	}
-
-}
+//void UOpenDoor::CloseDoor()
+//{
+//	
+//	FRotator NewRotation = FRotator(0.0f, 0.0f, 0.0f);
+//	FRotator NewRotation3 = FRotator(0.0f, -94.0f, 0.0f);
+//
+//	FRotator NewRotation4 = StartRotation;
+//	//ETeleportType tel = ETeleportType::None;
+//
+//	//Owner->SetActorRotation(NewRotation, ETeleportType::None);
+//	Owner->SetActorRotation(StartRotation);
+//
+//
+//	if (Owner->GetName() == "SM_Door3") {
+//		Owner->SetActorRotation(StartRotation);
+//	}
+//
+//}
