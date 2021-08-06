@@ -40,10 +40,10 @@ private:
 	float OpenAngle = 90.0f;
 
 	UPROPERTY(EditAnywhere)
-	ATriggerVolume * PressurePlate; //=nullptr;
+	ATriggerVolume * PressurePlate=nullptr;
 
 	UPROPERTY(EditAnywhere)
-	ATriggerVolume * PressurePlate2; //= nullptr;
+	ATriggerVolume * PressurePlate2= nullptr;
 
 	/*UPROPERTY(EditAnywhere)
 	AActor* ActorThatOpens=nullptr;*/
@@ -53,7 +53,7 @@ private:
 
 	float LastDoorOpenTime;
 
-	AActor* Owner; 
+	AActor* Owner=nullptr; 
 
 	FRotator StartRotation;
 

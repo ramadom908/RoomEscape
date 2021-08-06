@@ -33,6 +33,8 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	FColor color = { 255, 0, 0, 0 }; // red
 	DrawDebugLine(GetWorld(), GetReachLineStart(), GetReachLineEnd(), color, false, -1.0f, 0, 5.f);
 
+	if (!PhysicsHandle) { return; }
+
 	if (PhysicsHandle->GrabbedComponent) 
 	{
 		PhysicsHandle->SetTargetLocation(GetReachLineEnd());
@@ -63,6 +65,7 @@ void UGrabber::FindPhysicsHandleComponent()
 {
 	//Look for attached Physics handle
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+
 
 	if (PhysicsHandle) {
 
@@ -143,7 +146,7 @@ void UGrabber::Grab() {
 			NAME_None, 
 			ComponentToGrab->GetOwner()->GetActorLocation()
 		);*/
-
+		if (!PhysicsHandle) { return; }
 		PhysicsHandle->GrabComponentAtLocationWithRotation(
 			ComponentToGrab, 
 			NAME_None, 
@@ -156,6 +159,7 @@ void UGrabber::Grab() {
 void UGrabber::Release() {
 	UE_LOG(LogTemp, Warning, TEXT("Grab released"));
 	//Relese Physiscs
+	if (!PhysicsHandle) { return; } 
 	PhysicsHandle->ReleaseComponent();
 }
 
