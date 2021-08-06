@@ -18,7 +18,6 @@ void UGrabber::BeginPlay()
 
 	// ...
 	//UE_LOG(LogTemp, Warning, TEXT("Grabber reporting for duty9988!!!!!!"));
-
 	FindPhysicsHandleComponent();
 	SetUpInputComponent();
 	
@@ -30,20 +29,33 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	GetFirstPhysicsBodyInReach();
+	//Draw a red trace in the world to visualise
+	FColor color = { 255, 0, 0, 0 }; // red
+	DrawDebugLine(GetWorld(), GetReachLineStart(), GetReachLineEnd(), color, false, -1.0f, 0, 5.f);
 
+	if (PhysicsHandle->GrabbedComponent) 
+	{
+		PhysicsHandle->SetTargetLocation(GetReachLineEnd());
+	}
+}
 
+FVector UGrabber::GetReachLineEnd()
+{
 	FVector PlayerViewPointLocation;
 	FRotator PlayerViewPointRotation;
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(PlayerViewPointLocation, PlayerViewPointRotation);
 	FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
 
+	return LineTraceEnd;
+}
 
-	if (PhysicsHandle->GrabbedComponent) {
+FVector UGrabber::GetReachLineStart()
+{
+	FVector PlayerViewPointLocation;
+	FRotator PlayerViewPointRotation;
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(PlayerViewPointLocation, PlayerViewPointRotation);
 
-		PhysicsHandle->SetTargetLocation(LineTraceEnd);
-	}
-	
+	return PlayerViewPointLocation;
 }
 
 
@@ -66,7 +78,7 @@ void UGrabber::SetUpInputComponent()
 	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
 
 	if (InputComponent) {
-		UE_LOG(LogTemp, Error, TEXT("The input component found 99933 "));
+		//UE_LOG(LogTemp, Error, TEXT("The input component found "));
 		//Bind the input axis
 		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
 		InputComponent->BindAction("Grab", IE_Released, this, &UGrabber::Release);
@@ -84,56 +96,32 @@ const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 	//Get player viewpoint 
 
 	//UE_LOG(LogTemp, Warning, TEXT("Grabber reporting for duty9988!!!!!!"));
-
-	FVector PlayerViewPointLocation;
-	FRotator PlayerViewPointRotation;
-
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(PlayerViewPointLocation, PlayerViewPointRotation);
-
 	//UE_LOG(LogTemp, Warning, TEXT("The %s position is %s"), *ObjectName, *ObjectPosition);
-
 	//UE_LOG(LogTemp, Warning, TEXT("Position is:  %s,  Rotation is: %s"), *PlayerViewPointLocation.ToString(), *PlayerViewPointRotation.ToString());
-
-	
 
 	FColor color = { 255, 0, 0, 0 }; // red
 
-	FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
-
-
-	//Draw a red trace in the world to visualise
-
-	DrawDebugLine(GetWorld(), PlayerViewPointLocation, LineTraceEnd, color, false, -1.0f, 0, 5.f);
-
+	
+	
 	//Ray -cast (line trace)  out to reach distance 
 
 	//set up query parameters
-	FHitResult Hit;
+	FHitResult HitResult;
 
 	GetWorld()->LineTraceSingleByObjectType(
-		Hit,
-		PlayerViewPointLocation,
-		LineTraceEnd,
+		HitResult,
+		GetReachLineStart(),
+		GetReachLineEnd(),
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
 		FCollisionQueryParams(FName(TEXT("")), false, GetOwner())
 	);
 
-
-
-	if (Hit.GetActor()) {
-		FString actorName = Hit.GetActor()->GetName();
+	if (HitResult.GetActor()) {
+		FString actorName = HitResult.GetActor()->GetName();
 		UE_LOG(LogTemp, Warning, TEXT("I am hitting : %s"), *actorName);
 	}
 
-	/*AActor * actor = Hit.GetActor();
-
-	if (actor) {
-
-		UE_LOG(LogTemp, Warning, TEXT("I am hitting : %s"), *actor->GetName());
-	}*/
-
-
-	return Hit;
+	return HitResult;
 }
 
 
@@ -149,6 +137,7 @@ void UGrabber::Grab() {
 
 	// if we hit something attach a physics handle
 	if (ActorHit) {
+
 		/*PhysicsHandle->GrabComponentAtLocation(
 			ComponentToGrab, 
 			NAME_None, 
@@ -160,16 +149,12 @@ void UGrabber::Grab() {
 			NAME_None, 
 			ComponentToGrab->GetOwner()->GetActorLocation(), 
 			ComponentToGrab->GetOwner()->GetActorRotation()
-		);
-		
+		);		
 	}
-
-	
 }
 
 void UGrabber::Release() {
 	UE_LOG(LogTemp, Warning, TEXT("Grab released"));
-	
 	//Relese Physiscs
 	PhysicsHandle->ReleaseComponent();
 }
