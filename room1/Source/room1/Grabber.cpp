@@ -30,8 +30,15 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	//Draw a red trace in the world to visualise
-	FColor color = { 255, 0, 0, 0 }; // red
-	DrawDebugLine(GetWorld(), GetReachLineStart(), GetReachLineEnd(), color, false, -1.0f, 0, 5.f);
+	//FColor color = { 255, 0, 0, 0 }; // red
+	/*float Reach3 = 30.f;
+
+	FVector PlayerViewPointLocation;
+	FRotator PlayerViewPointRotation;
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(PlayerViewPointLocation, PlayerViewPointRotation);
+	FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach3;
+
+	DrawDebugLine(GetWorld(), GetReachLineStart(), LineTraceEnd, color, false, -1.0f, 5, 1.f);*/
 
 	if (!PhysicsHandle) { return; }
 
